@@ -1,4 +1,8 @@
 
+import pickle
+
+import numpy as np
+
 # Import the sequential model from Keras
 from keras.models import Sequential
 
@@ -31,36 +35,42 @@ class SmallCNN(object):
         # Define the input image shape, depth at the last
         self.img_rows = 224
         self.img_cols = 224
-        self.input_shape = (img_rows, img_cols, 3)
-        self.num_of_classes = 5
+        self.input_shape = (self.img_rows, self.img_cols, 3)
+        self.num_of_classes = 6
 
-        self.filters = [32, 64, 128]
+        self.filters = [64, 128, 256]
 
         """ Define the convolutional nerual network """
         # Initiate the convolutional nerual network as a sequential model in Keras
         self.model = Sequential()
 
-        for filt in self.filters:
-            conv_layer = Conv2D(filters=filt,
-                kernel_size=self.kernel_size, 
-                padding='same',
-                activation='relu',
-                input_shape=self.input_shape)
+        for i, filt in enumerate(self.filters):
+            if i == 0:
+                conv_layer = Conv2D(filters=filt,
+                    kernel_size=self.kernel_size, 
+                    padding='same',
+                    activation='relu',
+                    input_shape=self.input_shape)
+            else:
+                conv_layer = Conv2D(filters=filt,
+                    kernel_size=self.kernel_size, 
+                    padding='same',
+                    activation='relu')
 
             self.model.add(conv_layer)
-            self.model.add(MaxPooling2D(pool_size=pooling_size))
+            self.model.add(MaxPooling2D(pool_size=self.pooling_size))
 
         # Add a flatten layer to flatten the intermediate nodes
         self.model.add(Flatten())
 
         # Add a regular densely-connected layer with ReLu
-        self.model.add(Dense(1024, activation='relu'))
+        self.model.add(Dense(2048, activation='relu'))
 
         # Add a dropout layer for 0.5 keep probability
         self.model.add(Dropout(0.5))
 
         # Add the output layer to the network with softmax
-        self.model.add(Dense(10, activation='softmax'))
+        self.model.add(Dense(self.num_of_classes, activation='softmax'))
 
         # Generate an optimizer with learning rate = 1e-4
         adam_opt = Adam(lr=1e-4)
@@ -72,32 +82,71 @@ class SmallCNN(object):
                    optimizer=adam_opt,
                    metrics=['accuracy'])
 
-        def load_data(self):
-            pass
+    def to_onehot(self, y):
+        m = len(y)
+        y_array = np.zeros((m, self.num_of_classes))
 
-        def train(self):
-            # Define the TensorBoard callback
-            tb = TensorBoard()
+        for i, label in enumerate(y):
+            y_array[i, label - 1] = 1
 
-            # Define the file name of the best model 
-            best_model = './models/weights.best.hdf5'
-
-            # Define the modelcheckpoint callback
-            mc = ModelCheckpoint(best_model,
-                                save_best_only=True, 
-                                save_weights_only=True)
-
-            # Training process
-            history = self.model.fit(X_train, y_train, 
-                            batch_size=batch_size, 
-                            epochs=epochs, 
-                            verbose=0, 
-                            callbacks=[tb, mc],
-                            validation_data=(X_validation, y_validation))
+        return y_array
 
 
+    def load_data(self):
+        pickle_dir = './pickle_files/'
+        x_train_file = pickle_dir + 'tr_dataset.pickle'
+        y_train_file = pickle_dir + 'tr_labels.pickle'
 
-        def predict(self, X):
-            pass
+        self.X_train = pickle.load(open(x_train_file, 'rb'))
+        self.y_train = self.to_onehot(pickle.load(open(y_train_file, 'rb')))
+        
+        x_validation_file = pickle_dir + 'v_dataset.pickle'
+        y_validation_file = pickle_dir + 'v_labels.pickle'
 
+        self.X_validation = pickle.load(open(x_validation_file, 'rb'))
+        self.y_validation = self.to_onehot(pickle.load(open(y_validation_file, 'rb')))
+        
+        x_test_file = pickle_dir + 'te_dataset.pickle'
+        y_test_file = pickle_dir + 'te_labels.pickle'
+
+        self.X_test = pickle.load(open(x_test_file, 'rb'))
+        self.y_test = self.to_onehot(pickle.load(open(y_test_file, 'rb')))
+
+    def train(self):
+        # Define the TensorBoard callback
+        tb = TensorBoard()
+
+        # Define the file name of the best model 
+        best_model = './models/weights.best.hdf5'
+
+        # Define the modelcheckpoint callback
+        mc = ModelCheckpoint(best_model,
+                            save_best_only=True, 
+                            save_weights_only=True)
+
+        # Training process
+        history = self.model.fit(self.X_train, self.y_train,
+                        batch_size=self.batch_size,
+                        epochs=self.epochs,
+                        verbose=1,
+                        callbacks=[tb, mc],
+                        validation_data=(self.X_validation, self.y_validation))
+
+    def predict(self, X):
+        pass
+
+
+    def evaluate(self, X_test):
+        pass
+
+
+if __name__ == '__main__':
+    sc = SmallCNN()
+
+    sc.load_data()
+
+    sc.train()
+
+    import gc
+    gc.collect()
 
