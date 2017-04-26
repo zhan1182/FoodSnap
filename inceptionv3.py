@@ -7,6 +7,7 @@ from keras.layers import Dense, GlobalAveragePooling2D
 from keras import backend as K
 
 from keras.optimizers import SGD
+from keras.callbacks import TensorBoard, ModelCheckpoint
 
 from smallcnn import SmallCNN
 
@@ -64,7 +65,7 @@ for layer in model.layers[:172]:
 for layer in model.layers[172:]:
    layer.trainable = True
 
-sgd_optimizer = optimizers.SGD(lr=1e-4, momentum=0.9)
+sgd_optimizer = SGD(lr=1e-4, momentum=0.9)
 model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy')
 
 epochs = 10
