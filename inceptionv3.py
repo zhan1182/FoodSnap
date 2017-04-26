@@ -12,9 +12,9 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from smallcnn import SmallCNN
 
 # this could also be the output a different Keras model or layer
-input_tensor = Input(shape=(224, 224, 3))  # this assumes K.image_data_format() == 'channels_last'
+# input_tensor = Input(shape=(224, 224, 3))  # this assumes K.image_data_format() == 'channels_last'
 
-base_model = InceptionV3(input_tensor=input_tensor, weights='imagenet', include_top=False)
+base_model = InceptionV3(input_shape=(224, 224, 3), weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
