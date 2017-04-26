@@ -66,7 +66,7 @@ for layer in model.layers[172:]:
    layer.trainable = True
 
 sgd_optimizer = SGD(lr=1e-4, momentum=0.9)
-model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy')
+model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
 epochs = 10
 model.fit(sc.X_train, sc.y_train,
