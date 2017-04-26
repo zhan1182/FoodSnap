@@ -16,6 +16,7 @@ from keras.callbacks import TensorBoard, ModelCheckpoint
 from keras import backend
 from keras import optimizers
 
+from smallcnn import SmallCNN
 
 def build_vgg16(framework='tf'):
 
