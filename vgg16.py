@@ -152,23 +152,62 @@ sc = SmallCNN()
 sc.load_data()
 
 
-# # Train the top layer for 5 epochs
-# freezed_vgg_nb_epoch = 5
-
-# # Start to train
-# hist_vgg16_freezed = tf_model.fit(
-#         train_generator,
-#         steps_per_epoch = nb_train_samples // batch_size,
-#         epochs = freezed_vgg_nb_epoch,
-#         validation_data = validation_generator,
-#         validation_steps = nb_validation_samples // batch_size,
-#         callbacks=[vgg_tensorboard_callback, vgg_checkpoint_callback]
-# )
-
 tf_model.fit(sc.X_train, sc.y_train,
         batch_size=batch_size,
         epochs=epochs,
         verbose=1,
         callbacks=[vgg_tensorboard_callback, vgg_checkpoint_callback],
         validation_data=(sc.X_validation, sc.y_validation))
+
+
+
+# Unfreeze the first 25 layers
+for layer in tf_model.layers[:25]:
+    layer.trainable = True
+
+# Init an SGD optimizer
+sgd_optimizer = optimizers.SGD(lr=1e-4, momentum=0.9)    
+
+# Re-compile the model
+tf_model.compile(loss = 'binary_crossentropy',
+              optimizer = sgd_optimizer,
+              metrics=['accuracy'])
+
+epochs = 10
+tf_model.fit(sc.X_train, sc.y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        verbose=1,
+        callbacks=[vgg_tensorboard_callback, vgg_checkpoint_callback],
+        validation_data=(sc.X_validation, sc.y_validation))
+
+# Load the weights of the saved best model
+tf_model.load_weights(vgg16_fine_tuning_model_path)
+
+# Re-compile the model
+tf_model.compile(loss = 'binary_crossentropy',
+              optimizer = sgd_optimizer,
+              metrics=['accuracy'])
+
+batch_size = 100
+loss_list = []
+acc_list = []
+
+k = len(sc.y_test) // batch_size
+
+for i in range(k):
+	X_batch = sc.X_test[i * batch_size: (i + 1) * batch_size]
+	Y_batch = sc.y_test[i * batch_size: (i + 1) * batch_size]
+	loss, accuracy = tf_model.evaluate(X_batch, Y_batch, verbose=0)
+
+	loss_list.append(loss)
+	acc_list.append(accuracy)
+
+
+print(np.mean(loss_list), np.mean(acc_list))
+
+
+
+
+
 
