@@ -8,6 +8,8 @@ from keras import backend as K
 
 from keras.optimizers import SGD
 
+from smallcnn import SmallCNN
+
 # this could also be the output a different Keras model or layer
 input_tensor = Input(shape=(224, 224, 3))  # this assumes K.image_data_format() == 'channels_last'
 
