@@ -11,7 +11,7 @@ from keras.optimizers import SGD
 # this could also be the output a different Keras model or layer
 input_tensor = Input(shape=(224, 224, 3))  # this assumes K.image_data_format() == 'channels_last'
 
-base_model = InceptionV3(input_tensor=input_tensor, weights='imagenet', include_top=True)
+base_model = InceptionV3(input_tensor=input_tensor, weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
