@@ -27,7 +27,7 @@ class SmallCNN(object):
         self.pooling_size = (2, 2)
 
         # Define the batch size for training
-        self.batch_size = 50
+        self.batch_size = 32
 
         # Define the number of training cycle
         self.epochs = 20
@@ -38,7 +38,7 @@ class SmallCNN(object):
         self.input_shape = (self.img_rows, self.img_cols, 3)
         self.num_of_classes = 6
 
-        self.filters = [64, 128, 256]
+        self.filters = [32, 64, 128]
 
         """ Define the convolutional nerual network """
         # Initiate the convolutional nerual network as a sequential model in Keras
@@ -64,7 +64,7 @@ class SmallCNN(object):
         self.model.add(Flatten())
 
         # Add a regular densely-connected layer with ReLu
-        self.model.add(Dense(2048, activation='relu'))
+        self.model.add(Dense(1024, activation='relu'))
 
         # Add a dropout layer for 0.5 keep probability
         self.model.add(Dropout(0.5))
