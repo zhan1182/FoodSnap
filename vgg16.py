@@ -196,12 +196,12 @@ acc_list = []
 k = len(sc.y_test) // batch_size
 
 for i in range(k):
-	X_batch = sc.X_test[i * batch_size: (i + 1) * batch_size]
-	Y_batch = sc.y_test[i * batch_size: (i + 1) * batch_size]
-	loss, accuracy = tf_model.evaluate(X_batch, Y_batch, verbose=0)
+    X_batch = sc.X_test[i * batch_size: (i + 1) * batch_size]
+    Y_batch = sc.y_test[i * batch_size: (i + 1) * batch_size]
+    loss, accuracy = tf_model.evaluate(X_batch, Y_batch, verbose=0)
 
-	loss_list.append(loss)
-	acc_list.append(accuracy)
+    loss_list.append(loss)
+    acc_list.append(accuracy)
 
 
 print(np.mean(loss_list), np.mean(acc_list))
