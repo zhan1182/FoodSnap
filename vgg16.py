@@ -144,7 +144,7 @@ vgg_checkpoint_callback = ModelCheckpoint(vgg16_fine_tuning_model_path,
                                       save_weights_only=True)
 # Define the batch size
 batch_size = 32
-
+epochs = 5
 
 sc = SmallCNN()
 
@@ -164,4 +164,10 @@ sc.load_data()
 #         callbacks=[vgg_tensorboard_callback, vgg_checkpoint_callback]
 # )
 
+tf_model.fit(sc.X_train, sc.y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        verbose=1,
+        callbacks=[vgg_tensorboard_callback, vgg_checkpoint_callback],
+        validation_data=(sc.X_validation, sc.y_validation))
 
