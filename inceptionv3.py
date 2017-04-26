@@ -32,43 +32,43 @@ for layer in base_model.layers:
 model.compile(optimizer='rmsprop', loss='categorical_crossentropy')
 
 
-# Define the batch size
-batch_size = 32
-epochs = 5
+# # Define the batch size
+# batch_size = 32
+# epochs = 5
 
-sc = SmallCNN()
-sc.load_data()
+# sc = SmallCNN()
+# sc.load_data()
 
-# Define the tensorboard callback
-inc_tensorboard_log_dir = './logs/inc_fine_tuning/'
-inc_tensorboard_callback = TensorBoard(log_dir=inc_tensorboard_log_dir)
+# # Define the tensorboard callback
+# inc_tensorboard_log_dir = './logs/inc_fine_tuning/'
+# inc_tensorboard_callback = TensorBoard(log_dir=inc_tensorboard_log_dir)
 
-# Define the model checkpoint call back to save the best model
-inc_fine_tuning_model_path = './models/inc_fine_tuning_weights.best.hdf5'
-inc_checkpoint_callback = ModelCheckpoint(inc_fine_tuning_model_path, 
-                                      monitor='val_acc', 
-                                      save_best_only=True, 
-                                      save_weights_only=True)
+# # Define the model checkpoint call back to save the best model
+# inc_fine_tuning_model_path = './models/inc_fine_tuning_weights.best.hdf5'
+# inc_checkpoint_callback = ModelCheckpoint(inc_fine_tuning_model_path, 
+#                                       monitor='val_acc', 
+#                                       save_best_only=True, 
+#                                       save_weights_only=True)
 
-model.fit(sc.X_train, sc.y_train,
-        batch_size=batch_size,
-        epochs=epochs,
-        verbose=1,
-        callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
-        validation_data=(sc.X_validation, sc.y_validation))
+# model.fit(sc.X_train, sc.y_train,
+#         batch_size=batch_size,
+#         epochs=epochs,
+#         verbose=1,
+#         callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
+#         validation_data=(sc.X_validation, sc.y_validation))
 
-for layer in model.layers[:172]:
-   layer.trainable = False
-for layer in model.layers[172:]:
-   layer.trainable = True
+# for layer in model.layers[:172]:
+#    layer.trainable = False
+# for layer in model.layers[172:]:
+#    layer.trainable = True
 
-sgd_optimizer = optimizers.SGD(lr=1e-4, momentum=0.9)
-model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy')
+# sgd_optimizer = optimizers.SGD(lr=1e-4, momentum=0.9)
+# model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy')
 
-epochs = 10
-model.fit(sc.X_train, sc.y_train,
-        batch_size=batch_size,
-        epochs=epochs,
-        verbose=1,
-        callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
-        validation_data=(sc.X_validation, sc.y_validation))
+# epochs = 10
+# model.fit(sc.X_train, sc.y_train,
+#         batch_size=batch_size,
+#         epochs=epochs,
+#         verbose=1,
+#         callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
+#         validation_data=(sc.X_validation, sc.y_validation))
