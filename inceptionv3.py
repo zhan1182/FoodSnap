@@ -60,13 +60,31 @@ model.fit(sc.X_train, sc.y_train,
         callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
         validation_data=(sc.X_validation, sc.y_validation))
 
+
+batch_size = 100
+loss_list = []
+acc_list = []
+
+k = len(sc.y_test) // batch_size
+
+for i in range(k):
+    X_batch = sc.X_test[i * batch_size: (i + 1) * batch_size]
+    Y_batch = sc.y_test[i * batch_size: (i + 1) * batch_size]
+    loss, accuracy = model.evaluate(X_batch, Y_batch, verbose=1)
+
+    loss_list.append(loss)
+    acc_list.append(accuracy)
+
+print(np.mean(loss_list), np.mean(acc_list))
+
+
 for layer in model.layers[:172]:
    layer.trainable = False
 for layer in model.layers[172:]:
    layer.trainable = True
 
 sgd_optimizer = SGD(lr=1e-4, momentum=0.9)
-model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+model.compile(optimizer=sgd_optimizer, loss='categorical_crossentropy')
 
 epochs = 10
 model.fit(sc.X_train, sc.y_train,
@@ -75,3 +93,6 @@ model.fit(sc.X_train, sc.y_train,
         verbose=1,
         callbacks=[inc_tensorboard_callback, inc_checkpoint_callback],
         validation_data=(sc.X_validation, sc.y_validation))
+
+
+
