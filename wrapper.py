@@ -1,7 +1,13 @@
 #! /usr/bin/env python
-# -*- coding: utf-8 -*-
 
 import socket
+import pickle
+
+import numpy as np
+
+from vgg16 import load_saved_model
+
+model = load_saved_model()
 
 ip = '0.0.0.0'
 port = 8888
@@ -17,20 +23,21 @@ while True:
     connection, client_addr = cnn_server.accept()
 
     try:
-        message = connection.recv(256)
-        print('message = {0}'.format(message))
+        message = connection.recv(160000)
+        print('message')
     except socket.error:
         connection.close()
 
-    query = message.decode('utf-8').strip()
+    x = pickle.loads(message)
+    xl = x.reshape((1, 224, 224, 3))
 
-    if not query:
-        js = json.dumps({u'text': 'No data received.'})
-        connection.send(js.encode('utf-8'))
+    result = model.predict(xl)
+    preds = np.argmax(result[0])
 
-    # classify_result = nlp_search.search(query)
+    pp = pickle.dumps(preds)
 
-    js = json.dumps(classify_result)
+    connection.send(pp)
 
-    connection.send(js.encode('utf-8'))
+
+
 
