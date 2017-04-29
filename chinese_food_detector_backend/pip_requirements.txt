@@ -1,0 +1,8 @@
+Django==1.11
+Pillow==4.1.0
+olefile==0.44
+# python-memcached==1.58
+python3-memcached==1.51 # used for python 3
+pytz==2017.2
+six==1.10.0
+# wsgiref==0.1.2
