@@ -1,0 +1,4 @@
+**/*.pyc
+db.sqlite3
+food_images
+AML
